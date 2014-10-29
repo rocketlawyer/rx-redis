@@ -53,12 +53,10 @@ object Common {
       runIntegrationTest,
       commitReleaseVersion,
       tagRelease,
-      publishSignedArtifacts,
-      releaseToCentral,
+      publishArtifacts,
       setNextVersion,
       commitNextVersion,
-      pushChanges,
-      publishArtifacts
+      pushChanges
     ).map(_.copy(enableCrossBuild = false)),
     tagComment <<= (Keys.version in ThisBuild) map (v => s"Release version $v"),
     commitMessage <<= (Keys.version in ThisBuild) map (v => s"Set version to $v"),
