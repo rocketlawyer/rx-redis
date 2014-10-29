@@ -8,8 +8,6 @@ import sbtrelease.ReleasePlugin._
 import sbtrelease.ReleaseStateTransformations._
 import sbtrelease._
 import scalariform.formatter.preferences._
-import xerial.sbt.Sonatype.SonatypeKeys._
-
 
 object Common {
   lazy val RegressionTest = config("reg").extend(Test)
@@ -35,12 +33,6 @@ object Common {
 
   private lazy val runIntegrationTest = runTestIn(IntegrationTest)
   private lazy val runRegressionTest = runTestIn(RegressionTest)
-
-  private lazy val releaseToCentral = ReleaseStep(action = { st: State =>
-    val extracted = Project.extract(st)
-    val ref = extracted.get(Keys.thisProjectRef)
-    extracted.runAggregated(sonatypeReleaseAll in Global in ref, st)
-  })
 
   lazy val signedReleaseSettings = releaseSettings ++ List(
     releaseProcess := List[ReleaseStep](

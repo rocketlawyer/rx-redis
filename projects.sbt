@@ -82,7 +82,6 @@ lazy val rxRedis = {
     dependsOn(api, japi, client, commands, core).
     aggregate(api, japi, client, commands, core).
     settings(signedReleaseSettings: _*).
-    settings(sonatypeSettings: _*).
     settings(
       publishSigned := {}
     )
