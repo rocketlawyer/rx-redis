@@ -4,7 +4,7 @@ description in ThisBuild := """Reactive Extensions for Redis"""
 
 organization in ThisBuild := """de.knutwalker"""
 
-scalaVersion in ThisBuild := "2.11.2"
+scalaVersion in ThisBuild := Version.scala
 
 scalacOptions in ThisBuild ++= List(
   "-deprecation",
