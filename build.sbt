@@ -2,7 +2,7 @@ name := """rx-redis-parent"""
 
 description in ThisBuild := """Reactive Extensions for Redis"""
 
-organization in ThisBuild := """de.knutwalker"""
+organization in ThisBuild := """net.crispywalrus.rx-redis"""
 
 scalaVersion in ThisBuild := Version.scala
 
