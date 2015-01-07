@@ -1,17 +1,23 @@
 startYear in ThisBuild := Some(2014)
 
-homepage in ThisBuild := Some(url("https://github.com/crispywalrus/rx-redis"))
+homepage in ThisBuild := Some(url("https://github.com/rocketlawyer/rx-redis"))
 
 licenses in ThisBuild += "Apache License, Verison 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
 
-scmInfo in ThisBuild := Some(ScmInfo(url("https://github.com/crispywalrus/rx-redis"), "scm:git:https://github.com/crispywalrus/rx-redis.git", Some("scm:git:ssh://git@github.com:crispywalrus/rx-redis.git")))
+scmInfo in ThisBuild := Some(
+  ScmInfo(
+    url("https://github.com/rocketlawyer/rx-redis"),
+    "scm:git:https://github.com/rocketlawyer/rx-redis.git",
+    Some("scm:git:ssh://git@github.com:rocketlawyer/rx-redis.git")
+  )
+)
 
 pomExtra in ThisBuild :=
   <developers>
     <developer>
-      <id>crispywalrus</id>
+      <id>knutwalker</id>
       <name>Paul Horn</name>
-      <url>http://crispywalrus.de/</url>
+      <url>http://knutwalker.de/</url>
     </developer>
   </developers>
 
