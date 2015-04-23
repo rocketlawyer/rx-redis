@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,72 +16,105 @@
 
 package rx.redis.commands
 
-import scala.concurrent.duration.FiniteDuration
+import rx.redis.serialization.{ ByteBufReader, ByteBufWriter, Reads, Writes }
 
-import rx.redis.serialization.{ BytesFormat, Reads, Writes }
+import scala.concurrent.duration.FiniteDuration
 
 case class Get(key: String)
 object Get {
-  implicit val writes = Writes.writes[Get]
-  implicit def readsFormat[A: BytesFormat] = Reads.opt[Get, A]
+  implicit val writes: Writes[Get] =
+    Writes.writes[Get]
+
+  implicit def readsFormat[A: ByteBufReader]: Reads.Aux[Get, Option[A]] =
+    Reads.opt[Get, A]
 }
 
-case class Set[A: BytesFormat](key: String, value: A)
+case class Set[A: ByteBufWriter](key: String, value: A)
 object Set {
-  implicit def writes[A: BytesFormat] = Writes.writes[Set[A]]
-  implicit val readsFormat = Reads.bool[Set[_]]
+  implicit def writes[A: ByteBufWriter]: Writes[Set[A]] =
+    Writes.writes[Set[A]]
+
+  implicit val readsFormat: Reads.Aux[Set[_], Boolean] =
+    Reads.bool[Set[_]]
 }
 
-case class SetEx[A: BytesFormat](key: String, expires: FiniteDuration, value: A)
+case class SetEx[A: ByteBufWriter](key: String, expires: FiniteDuration, value: A)
 object SetEx {
-  implicit def writes[A: BytesFormat] = Writes.writes[SetEx[A]]
-  implicit val readsFormat = Reads.bool[SetEx[_]]
+  implicit def writes[A: ByteBufWriter]: Writes[SetEx[A]] =
+    Writes.writes[SetEx[A]]
+
+  implicit val readsFormat: Reads.Aux[SetEx[_], Boolean] =
+    Reads.bool[SetEx[_]]
 }
 
-case class SetNx[A: BytesFormat](key: String, value: A)
+case class SetNx[A: ByteBufWriter](key: String, value: A)
 object SetNx {
-  implicit def writes[A: BytesFormat] = Writes.writes[SetNx[A]]
-  implicit val readsFormat = Reads.bool[SetNx[_]]
+  implicit def writes[A: ByteBufWriter]: Writes[SetNx[A]] =
+    Writes.writes[SetNx[A]]
+
+  implicit val readsFormat: Reads.Aux[SetNx[_], Boolean] =
+    Reads.bool[SetNx[_]]
 }
 
 case class Incr(key: String)
 object Incr {
-  implicit val writes = Writes.writes[Incr]
-  implicit val readsFormat = Reads.int[Incr]
+  implicit val writes: Writes[Incr] =
+    Writes.writes[Incr]
+
+  implicit val readsFormat: Reads.Aux[Incr, Long] =
+    Reads.int[Incr]
 }
 
 case class Decr(key: String)
 object Decr {
-  implicit val writes = Writes.writes[Decr]
-  implicit val readsFormat = Reads.int[Decr]
+  implicit val writes: Writes[Decr] =
+    Writes.writes[Decr]
+
+  implicit val readsFormat: Reads.Aux[Decr, Long] =
+    Reads.int[Decr]
 }
 
 case class IncrBy(key: String, amount: Long)
 object IncrBy {
-  implicit val writes = Writes.writes[IncrBy]
-  implicit val readsFormat = Reads.int[IncrBy]
+  implicit val writes: Writes[IncrBy] =
+    Writes.writes[IncrBy]
+
+  implicit val readsFormat: Reads.Aux[IncrBy, Long] =
+    Reads.int[IncrBy]
 }
 
 case class DecrBy(key: String, amount: Long)
 object DecrBy {
-  implicit val writes = Writes.writes[DecrBy]
-  implicit val readsFormat = Reads.int[DecrBy]
+  implicit val writes: Writes[DecrBy] =
+    Writes.writes[DecrBy]
+
+  implicit val readsFormat: Reads.Aux[DecrBy, Long] =
+    Reads.int[DecrBy]
 }
 
 case class MGet(keys: String*)
 object MGet {
-  implicit val writes = Writes.writes[MGet]
-  implicit def readsFormat[A: BytesFormat] = Reads.listOpt[MGet, A]
+  implicit val writes: Writes[MGet] =
+    Writes.writes[MGet]
+
+  implicit def readsFormat[A: ByteBufReader]: Reads.Aux[MGet, Option[A]] =
+    Reads.listOpt[MGet, A]
 }
 
-case class MSet[A: BytesFormat](keys: (String, A)*)
+case class MSet[A: ByteBufWriter](keys: (String, A)*)
 object MSet {
-  implicit def writes[A: BytesFormat] = Writes.writes[MSet[A]]
-  implicit val readsFormat = Reads.bool[MSet[_]]
+  implicit def writes[A: ByteBufWriter]: Writes[MSet[A]] =
+    Writes.writes[MSet[A]]
+
+  implicit val readsFormat: Reads.Aux[MSet[_], Boolean] =
+    Reads.bool[MSet[_]]
 }
 
 case class StrLen(key: String)
 object StrLen {
-  implicit val writes = Writes.writes[StrLen]
-  implicit val readsFormat = Reads.int[StrLen]
+  implicit val writes: Writes[StrLen] =
+    Writes.writes[StrLen]
+
+  implicit val readsFormat: Reads.Aux[StrLen, Long] =
+    Reads.int[StrLen]
 }

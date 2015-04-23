@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package com.example
 
 import rx.redis.api.RxRedis
-
 
 object Example extends App {
 
@@ -39,13 +38,13 @@ object Example extends App {
     client.mget("foo1", "foo2", "foo4", "foo3", "foo5")
 
   gets.merge(mget).
-    foreach(r => println("GET or MGET = " + r))
+    foreach(r ⇒ println("GET or MGET = " + r))
 
   val mixed = client.ping() ++
     client.echo("42") ++
     client.incr("what?").map(_.toString)
 
-  mixed.foreach(r => println("mixed = " + r))
+  mixed.foreach(r ⇒ println("mixed = " + r))
 
   RxRedis.shutdown(client)
 }

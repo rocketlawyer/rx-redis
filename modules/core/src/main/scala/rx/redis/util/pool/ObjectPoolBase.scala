@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ private abstract class ObjectPoolBase[A](settings: PoolSettings)(implicit A: Poo
   }
 
   @tailrec
-  private def create(): Option[A] = {
+  private[this] def create(): Option[A] = {
     val current = poolSize
     if (current >= settings.max) {
       None
@@ -46,13 +46,13 @@ private abstract class ObjectPoolBase[A](settings: PoolSettings)(implicit A: Poo
     }
   }
 
-  private def activate(obj: A): A = A.activate(obj)
+  private[this] def activate(obj: A): A = A.activate(obj)
 
-  private def validate(obj: A): Boolean = A.validate(obj)
+  private[this] def validate(obj: A): Boolean = A.validate(obj)
 
-  private def passivate(obj: A): A = A.passivate(obj)
+  private[this] def passivate(obj: A): A = A.passivate(obj)
 
-  private def destroy(obj: A): Unit = {
+  private[this] def destroy(obj: A): Unit = {
     decrementPoolSize()
     A.destroy(obj)
   }

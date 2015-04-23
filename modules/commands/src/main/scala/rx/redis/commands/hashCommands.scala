@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,22 @@
 
 package rx.redis.commands
 
-import rx.redis.serialization.{ BytesFormat, Reads, Writes }
+import rx.redis.serialization.{ ByteBufReader, Reads, Writes }
 
 case class HGet(key: String, field: String)
 object HGet {
-  implicit val writes = Writes.writes[HGet]
-  implicit def readsFormat[A: BytesFormat] = Reads.opt[HGet, A]
+  implicit val writes: Writes[HGet] =
+    Writes.writes[HGet]
+
+  implicit def readsFormat[A: ByteBufReader]: Reads.Aux[HGet, Option[A]] =
+    Reads.opt[HGet, A]
 }
 
 case class HGetAll(key: String)
 object HGetAll {
-  implicit val writes = Writes.writes[HGetAll]
-  implicit def readsFormat[A: BytesFormat] = Reads.listPair[HGetAll, String, A]
+  implicit val writes: Writes[HGetAll] =
+    Writes.writes[HGetAll]
+
+  implicit def readsFormat[A: ByteBufReader]: Reads.Aux[HGetAll, (String, A)] =
+    Reads.listPair[HGetAll, String, A](ByteBufReader.readFramelessString, implicitly)
 }

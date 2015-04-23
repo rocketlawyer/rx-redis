@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package rx.redis.pipeline
 
+import rx.redis.resp.RespType
+
 import rx.Observer
+
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.socket.SocketChannel
-import io.netty.util.internal.PlatformDependent
 
-import rx.redis.resp.RespType
+import java.util
 
 private[redis] class RxChannelInitializer(optimizeForThroughput: Boolean) extends ChannelInitializer[SocketChannel] {
   def initChannel(ch: SocketChannel): Unit = {
@@ -33,7 +35,7 @@ private[redis] class RxChannelInitializer(optimizeForThroughput: Boolean) extend
       ch.config().setTcpNoDelay(true)
     }
 
-    val queue = PlatformDependent.newMpscQueue[Observer[RespType]]
+    val queue = new util.LinkedList[Observer[RespType]]()
 
     ch.pipeline().
       addLast("resp-codec", new RespCodec).

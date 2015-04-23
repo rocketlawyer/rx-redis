@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ import rx.redis.serialization.ByteBufDeserializer
 
 private[redis] trait RespDecoder { this: ChannelInboundHandler ⇒
 
-  private final var buffered: ByteBuf = null
+  private[this] final var buffered: ByteBuf = null
 
   final override def channelRead(ctx: ChannelHandlerContext, msg: Any): Unit = msg match {
     case in: ByteBuf ⇒
       decode(ctx, in)
     case _ ⇒
-      throw new IllegalArgumentException(s"msg is not a [${classOf[ByteBuf].getName}].")
+      throw new IllegalArgumentException("msg is not a [io.netty.buffer.ByteBuf].")
   }
 
   final override def channelReadComplete(ctx: ChannelHandlerContext): Unit = {
@@ -48,12 +48,12 @@ private[redis] trait RespDecoder { this: ChannelInboundHandler ⇒
     ctx.fireChannelInactive()
   }
 
-  private final def decode(ctx: ChannelHandlerContext, data: ByteBuf): Unit = {
+  private[this] final def decode(ctx: ChannelHandlerContext, data: ByteBuf): Unit = {
     val completeData = mergeFrames(ctx.alloc(), data)
     decode0(ctx, completeData)
   }
 
-  private final def decode0(ctx: ChannelHandlerContext, completeData: ByteBuf): Unit = {
+  private[this] final def decode0(ctx: ChannelHandlerContext, completeData: ByteBuf): Unit = {
     val needMore = ByteBufDeserializer.foreach(completeData) { resp ⇒
       ctx.fireChannelRead(resp)
     }
@@ -64,26 +64,30 @@ private[redis] trait RespDecoder { this: ChannelInboundHandler ⇒
     }
   }
 
-  private final def mergeFrames(alloc: ByteBufAllocator, frame: ByteBuf): ByteBuf = {
+  private[this] final def mergeFrames(alloc: ByteBufAllocator, frame: ByteBuf): ByteBuf = {
     if (buffered eq null) {
       frame
     } else {
-      val buf = ensureSize(alloc, frame.readableBytes())
+      val buf = ensureSize(alloc, buffered, frame.readableBytes())
       buf.writeBytes(frame)
       frame.release()
+      buffered = null
       buf
     }
   }
 
-  private final def ensureSize(alloc: ByteBufAllocator, size: Int): ByteBuf = {
-    var newBuf = buffered
-    if (newBuf.writerIndex > newBuf.maxCapacity - size) {
-      val buf = alloc.buffer(newBuf.readableBytes + size)
-      buf.writeBytes(newBuf)
-      newBuf.release()
-      newBuf = buf
+  private[this] final def ensureSize(alloc: ByteBufAllocator, buffer: ByteBuf, size: Int): ByteBuf = {
+    if (buffer.writerIndex > buffer.maxCapacity - size) {
+      resizeBuffer(alloc, size, buffer)
+    } else {
+      buffer
     }
-    buffered = null
-    newBuf
+  }
+
+  private[this] final def resizeBuffer(alloc: ByteBufAllocator, size: Int, old: ByteBuf): ByteBuf = {
+    val buf = alloc.buffer(old.readableBytes + size)
+    buf.writeBytes(old)
+    old.release()
+    buf
   }
 }

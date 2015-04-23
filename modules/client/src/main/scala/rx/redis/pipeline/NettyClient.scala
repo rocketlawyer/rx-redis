@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,16 @@
 package rx.redis.pipeline
 
 import rx.{ Observable, Observer }
+import io.netty.buffer.{ ByteBuf, ByteBufAllocator }
 import io.netty.channel.ChannelFuture
 
 import rx.redis.resp.RespType
 
 trait NettyClient {
 
-  def send(data: RespType, receiver: Observer[RespType]): Unit
+  def alloc: ByteBufAllocator
+
+  def send(bb: ByteBuf, receiver: Observer[RespType]): Unit
 
   def buffer(data: RespType, receiver: Observer[RespType]): Unit
 

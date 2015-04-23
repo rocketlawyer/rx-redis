@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,15 @@ public final class CustomFormatExample {
 
     final Client client = RxRedis.connect("localhost", 6379);
 
-    final Person knut = new Person("Knütsen \uD83D\uDCA9", 27);
+    final Person knut = new Person("Knütß \uD83D\uDCA9", 27);
     client.setAs("person:knut", knut, Person.BYTES_FORMAT);
 
-    client.get("person:knut").forEach(s -> System.out.println("Person as string: " + s.orElse("")));
-    client.getBytes("person:knut").forEach(b -> System.out.println("Person as bytes: " + b.map(Arrays::toString).orElse("")));
+    client.get("person:knut")
+        .forEach(s -> System.out.println("Person as string: " + s.orElse("")));
+
+    client.getBytes("person:knut")
+        .forEach(b -> System.out.println("Person as bytes: " + b.map(Arrays::toString).orElse("")));
+
     client.getAs("person:knut", Person.BYTES_FORMAT)
         .forEach(p -> System.out.println("Person as Person: " + p.orElse(null)));
 

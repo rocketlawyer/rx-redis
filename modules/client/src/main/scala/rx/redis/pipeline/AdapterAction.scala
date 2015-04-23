@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,25 @@
 
 package rx.redis.pipeline
 
+import rx.redis.resp.RespType
+
 import rx.Observer
+
+import io.netty.buffer.ByteBuf
 import io.netty.util.Recycler
 import io.netty.util.Recycler.Handle
 
-import rx.redis.resp.RespType
+class AdapterAction private (private[this] val handle: Handle) {
+  private[this] var _cmd: ByteBuf = _
+  private[this] var _sender: Observer[RespType] = _
 
-class AdapterAction private (private val handle: Handle) {
-  private var _cmd: RespType = _
-  private var _sender: Observer[RespType] = _
+  def cmd: ByteBuf = _cmd
+  def sender: Observer[RespType] = _sender
 
-  def cmd = _cmd
-  def sender = _sender
+  private def update(cmd: ByteBuf, sender: Observer[RespType]): Unit = {
+    _cmd = cmd
+    _sender = sender
+  }
 
   def recycle(): Unit = {
     _cmd = null
@@ -41,10 +48,9 @@ object AdapterAction {
     def newObject(handle: Handle): AdapterAction = new AdapterAction(handle)
   }
 
-  def apply(cmd: RespType, sender: Observer[RespType]): AdapterAction = {
+  def apply(cmd: ByteBuf, sender: Observer[RespType]): AdapterAction = {
     val adapterAction = InstanceRecycler.get()
-    adapterAction._cmd = cmd
-    adapterAction._sender = sender
+    adapterAction.update(cmd, sender)
     adapterAction
   }
 }

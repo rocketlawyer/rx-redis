@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import java.util.function.Consumer
 
 final class SharedNioEventLoopGroup(threadCount: Int, threadFactory: ThreadFactory) extends NioEventLoopGroup(threadCount, threadFactory) with ReferenceCounted {
 
-  private val refs = new AtomicInteger(1)
-  private def newFuture = new DefaultPromise[Void](GlobalEventExecutor.INSTANCE)
+  private[this] val refs = new AtomicInteger(1)
+  private[this] def newFuture = new DefaultPromise[Void](GlobalEventExecutor.INSTANCE)
 
   sys.addShutdownHook {
     refs.set(0)

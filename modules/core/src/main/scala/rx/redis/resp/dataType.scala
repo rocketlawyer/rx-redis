@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 package rx.redis.resp
 
-import java.nio.charset.Charset
-import java.util
-
 import rx.redis.util.Utf8
+
+import io.netty.buffer.{ ByteBuf, Unpooled }
+
+import java.nio.charset.Charset
 
 sealed abstract class RespType
 
@@ -36,32 +37,30 @@ case class RespInteger(value: Long) extends RespType {
   override def toString: String = value.toString
 }
 
-case class RespArray(elements: Array[RespType]) extends RespType {
+case class RespArray(elements: Vector[RespType]) extends RespType {
   override def toString: String = elements.map(_.toString).mkString("[", ", ", "]")
 
-  override def equals(obj: scala.Any): Boolean = obj match {
-    case RespArray(other) ⇒
-      util.Arrays.equals(elements.asInstanceOf[Array[AnyRef]], other.asInstanceOf[Array[AnyRef]])
-    case _ ⇒ super.equals(obj)
-  }
+  def :+(x: RespType): RespArray = RespArray(elements :+ x)
+  def +:(x: RespType): RespArray = RespArray(x +: elements)
+  def ++(xs: RespArray): RespArray = RespArray(elements ++ xs.elements)
+  def ++(xs: RespType*): RespArray = RespArray(elements ++ xs)
+}
+object RespArray {
+  val empty = RespArray(Vector.empty)
+
+  def apply(x: RespType, xs: RespType*): RespArray =
+    RespArray(x +: xs.toVector)
 }
 
-case class RespBytes(bytes: Array[Byte]) extends RespType {
-  override def equals(obj: scala.Any): Boolean = obj match {
-    case RespBytes(bs) ⇒ util.Arrays.equals(bytes, bs)
-    case _             ⇒ super.equals(obj)
-  }
+case class RespBytes private (bb: ByteBuf) extends RespType {
 
-  override def toString: String = new String(bytes, Utf8)
+  override def toString: String = bb.toString(Utf8)
 
-  def toString(charset: Charset): String = new String(bytes, charset)
+  def toString(charset: Charset): String = bb.toString(charset)
 }
 object RespBytes {
-  def apply(s: String, charset: Charset): RespBytes =
-    apply(s.getBytes(charset))
-
-  def apply(s: String): RespBytes =
-    apply(s, Utf8)
+  def wrap(bb: ByteBuf): RespBytes =
+    new RespBytes(Unpooled.unmodifiableBuffer(bb))
 }
 
 case object NullString extends RespType {
@@ -71,15 +70,3 @@ case object NullString extends RespType {
 case object NullArray extends RespType {
   override def toString: String = "NULL"
 }
-
-//sealed abstract class ErrorType extends RespType
-//
-//case object NotEnoughData extends ErrorType {
-//  override def toString: String = "[INCOMPLETE]"
-//}
-//case class ProtocolError(pos: Int, found: Char, expected: List[Byte]) extends ErrorType {
-//  override def toString: String = {
-//    val e = expected mkString ", "
-//    s"Protocol error at char $pos, expected [$e], but found [$found]"
-//  }
-//}

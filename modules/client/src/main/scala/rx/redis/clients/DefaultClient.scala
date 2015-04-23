@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,19 @@
 
 package rx.redis.clients
 
-import rx.Observable
-import rx.subjects.AsyncSubject
-
 import rx.redis.pipeline.NettyClient
 import rx.redis.resp.RespType
 
+import rx.Observable
+import rx.subjects.AsyncSubject
+
+import io.netty.buffer.ByteBuf
+
 private[redis] final class DefaultClient(protected val netty: NettyClient) extends RawClient {
 
-  def command(cmd: RespType): Observable[RespType] = {
+  def command(bb: ByteBuf): Observable[RespType] = {
     val s = AsyncSubject.create[RespType]()
-    netty.send(cmd, s)
+    netty.send(bb, s)
     s
   }
 

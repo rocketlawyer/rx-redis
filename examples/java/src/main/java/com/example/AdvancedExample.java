@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Paul Horn
+ * Copyright 2014 – 2015 Paul Horn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package com.example;
 
+import io.netty.buffer.ByteBuf;
 import rx.redis.japi.Client;
 import rx.redis.japi.RxRedis;
-import rx.redis.resp.RespType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +31,8 @@ public final class AdvancedExample {
 
     final Client client = RxRedis.connect("localhost", 6379);
 
-    final RespType serverInfoCommand = RxRedis.command("INFO SERVER");
-    final RespType clientListCommand = RxRedis.command("CLIENT LIST");
+    final ByteBuf serverInfoCommand = RxRedis.command("INFO SERVER");
+    final ByteBuf clientListCommand = RxRedis.command("CLIENT LIST");
 
     final List<String> results =
         client.command(serverInfoCommand)
