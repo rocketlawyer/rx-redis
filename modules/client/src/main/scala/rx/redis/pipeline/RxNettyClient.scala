@@ -57,21 +57,24 @@ object RxNettyClient {
   private[this] final class ChannelCloseSubscribe(channel: Channel) extends OnSubscribe[Unit] {
     def call(subscriber: Subscriber[_ >: Unit]): Unit =
       channel.close().addListener(
-        new ChannelCloseListener(subscriber, channel.eventLoop.parent))
+        new ChannelCloseListener(subscriber, channel.eventLoop.parent)
+      )
   }
 
   private[this] final class ChannelCloseListener[S <: Subscriber[_ >: Unit]](subscriber: S, eventLoopGroup: EventLoopGroup) extends ChannelFutureListener {
     def operationComplete(future: ChannelFuture): Unit =
       futureSubscription(
         future, subscriber,
-        eventLoopGroup.shutdownGracefully().addListener(new ShutdownListener(subscriber)))
+        eventLoopGroup.shutdownGracefully().addListener(new ShutdownListener(subscriber))
+      )
   }
 
   private[this] final class ShutdownListener[F <: Future[_], S <: Subscriber[_ >: Unit]](subscriber: S) extends GenericFutureListener[F] {
     def operationComplete(future: F): Unit =
       futureSubscription(
         future, subscriber,
-        subscriber.onCompleted())
+        subscriber.onCompleted()
+      )
   }
 
   private[this] final def futureSubscription[F <: Future[_], S <: Subscriber[_ >: Unit]](future: F, subscriber: S, onNext: ⇒ Unit): Unit =

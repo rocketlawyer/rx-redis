@@ -66,7 +66,8 @@ class DeserializerSpec extends FunSuite with Inside {
   test("deserialize errors as simple strings") {
     compare(
       "-WRONGTYPE Operation against a key holding the wrong kind of value\r\n",
-      RespError("WRONGTYPE Operation against a key holding the wrong kind of value"))
+      RespError("WRONGTYPE Operation against a key holding the wrong kind of value")
+    )
   }
 
   test("deserialize integers") {
@@ -108,14 +109,16 @@ class DeserializerSpec extends FunSuite with Inside {
   }
 
   test("deserialize mixed arrays") {
-    compare("*5\r\n:1\r\n:2\r\n:3\r\n:4\r\n$6\r\nfoobar\r\n",
+    compare(
+      "*5\r\n:1\r\n:2\r\n:3\r\n:4\r\n$6\r\nfoobar\r\n",
       RespArray(
         RespInteger(1),
         RespInteger(2),
         RespInteger(3),
         RespInteger(4),
         respBytes("foobar")
-      ))
+      )
+    )
   }
 
   test("deserialize an empty array") {
@@ -127,7 +130,8 @@ class DeserializerSpec extends FunSuite with Inside {
   }
 
   test("deserialize nested arrays") {
-    compare("*2\r\n*3\r\n:1\r\n:2\r\n:3\r\n*2\r\n+Foo\r\n-Bar\r\n",
+    compare(
+      "*2\r\n*3\r\n:1\r\n:2\r\n:3\r\n*2\r\n+Foo\r\n-Bar\r\n",
       RespArray(
         RespArray(
           RespInteger(1),

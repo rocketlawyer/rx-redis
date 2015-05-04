@@ -21,7 +21,8 @@ import rx.redis.resp.RespType
 final class DecodeException[Expected] private (val resp: RespType, msg: String, reason: Throwable)
   extends IllegalArgumentException(
     s"Could not decode [${resp.toString.replaceAll("\\r", "")}]$msg",
-    reason)
+    reason
+  )
 
 object DecodeException {
   def apply[A](resp: RespType): DecodeException[A] =

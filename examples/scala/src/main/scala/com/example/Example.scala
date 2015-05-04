@@ -27,9 +27,10 @@ object Example extends App {
 
   client.get("key")
   client.mset(
-    "foo1" -> "foo1",
-    "foo2" -> "foo2",
-    "foo3" -> "foo3")
+    "foo1" → "foo1",
+    "foo2" → "foo2",
+    "foo3" → "foo3"
+  )
 
   val gets =
     client.get("foo") merge client.get("foo1")

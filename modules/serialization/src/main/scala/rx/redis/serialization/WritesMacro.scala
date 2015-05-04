@@ -133,7 +133,8 @@ class WritesMacro(val c: blackbox.Context) {
       if (resolved == EmptyTree) {
         fail(
           s"""Missing implicit instance of $tc
-             |This is required to serialize instances of ${tc.typeArgs.head}""".stripMargin)
+             |This is required to serialize instances of ${tc.typeArgs.head}""".stripMargin
+        )
       }
       resolved
     }

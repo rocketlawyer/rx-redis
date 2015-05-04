@@ -11,8 +11,8 @@ import xerial.sbt.Sonatype.SonatypeKeys.{profileName, sonatypeReleaseAll}
 
 
 lazy val parent = project in file(".") dependsOn (
-  api, japi, client, commands, serialization, core) aggregate (
-  api, japi, client, commands, serialization, core, `java-examples`, `scala-examples`, tests) settings (
+  api, client, commands, serialization, core) aggregate (
+  api, client, commands, serialization, core, `scala-examples`, tests) settings (
   buildsUberJar,
   rxRedisSettings,
   doNotPublish,
@@ -46,22 +46,12 @@ lazy val api = project in file("language-bindings") / "scala" enablePlugins Auto
   name := "rx-redis-scala",
   libraryDependencies += "io.reactivex" %% "rxscala" % rxScalaVersion.value exclude("org.scala-lang", "scala-library"))
 
-lazy val japi = project in file("language-bindings") / "java" enablePlugins AutomateHeaderPlugin dependsOn client settings (
-  buildsUberJar,
-  rxRedisSettings,
-  name := "rx-redis-java",
-  libraryDependencies += "org.scala-lang.modules" %% "scala-java8-compat" % "0.3.0")
-
 lazy val `scala-examples` = project in file("examples") / "scala" enablePlugins AutomateHeaderPlugin dependsOn api settings (
   Revolver.settings,
   rxRedisSettings,
   name := "rx-redis-example")
 
-lazy val `java-examples` = project in file("examples") / "java" enablePlugins AutomateHeaderPlugin dependsOn japi settings (
-  rxRedisSettings,
-  name := "rx-redis-java-example")
-
-lazy val tests = project enablePlugins AutomateHeaderPlugin configs IntegrationTest dependsOn (client, api, japi) settings (
+lazy val tests = project enablePlugins AutomateHeaderPlugin configs IntegrationTest dependsOn (client, api) settings (
   rxRedisSettings,
   doNotPublish,
   Defaults.itSettings,
@@ -196,11 +186,11 @@ lazy val publishSettings = releaseSettings ++ sonatypeSettings ++ List(
             commitMessage <<= version map (v => s"Set version to $v"),
                versionBump := sbtrelease.Version.Bump.Minor,
   publishTo := {
-    val nexus = "https://oss.sonatype.org/"
+    val nexus = "http://f1tst-linbld100/nexus/content/"
     if (isSnapshot.value)
-      Some("snapshots" at nexus + "content/repositories/snapshots")
+      Some("snapshots" at nexus + "repositories/snapshots")
     else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+      Some("thirdparty" at nexus + "repositories/thirdparty")
   },
   pomExtra := {
     <licenses>

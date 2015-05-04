@@ -76,10 +76,12 @@ object ByteBufReader {
   implicit val readByteArray: ByteBufReader[Array[Byte]] =
     apply(bb ⇒ {
       val length = bb.readInt()
-      bb.ensuring(_.isReadable(length),
+      bb.ensuring(
+        _.isReadable(length),
         s"An array of $length bytes should be decoded, but there are only" +
           s" ${bb.readableBytes()} more bytes left to read. This ByteBuf likely" +
-          s" represents different data or a different encoding")
+          s" represents different data or a different encoding"
+      )
       val target = new Array[Byte](length)
       bb.readBytes(target)
       target

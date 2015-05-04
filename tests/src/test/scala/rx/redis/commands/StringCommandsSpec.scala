@@ -86,7 +86,7 @@ class StringCommandsSpec extends CommandsSuite {
   }
 
   test("MSET") {
-    val mset = MSet("foo" -> "bar", "bar" -> "baz")
+    val mset = MSet("foo" → "bar", "bar" → "baz")
     sers(mset, "MSET", "foo", "\u0000\u0000\u0000\u0003bar", "bar", "\u0000\u0000\u0000\u0003baz")
     ser(mset, cmd"MSET foo \u0000\u0000\u0000\u0003bar bar \u0000\u0000\u0000\u0003baz")
   }

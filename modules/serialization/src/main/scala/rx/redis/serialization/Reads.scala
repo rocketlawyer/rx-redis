@@ -72,7 +72,7 @@ object Reads {
     case RespArray(items) ⇒
       items.grouped(2).collect {
         case Vector(t, u) if T.isDefinedAt(t) && U.isDefinedAt(u) ⇒
-          T(t) -> U(u)
+          T(t) → U(u)
       }.toVector
   }
 

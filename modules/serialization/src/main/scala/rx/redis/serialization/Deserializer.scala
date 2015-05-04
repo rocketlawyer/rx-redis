@@ -31,7 +31,8 @@ object Deserializer {
 
   private[redis] final val NotEnoughData = new RuntimeException with NoStackTrace with RespFailure
   private[redis] final case class ProtocolError(pos: Int, found: Char, expected: List[Byte]) extends RuntimeException(
-    s"Protocol error at char $pos, expected [${expected mkString ", "}], but found [$found]") with RespFailure
+    s"Protocol error at char $pos, expected [${expected mkString ", "}], but found [$found]"
+  ) with RespFailure
 
   object RespFailure {
     def apply(t: Throwable): Boolean = t match {
